@@ -1,6 +1,8 @@
 require 'spec_helper'
 
 describe "Static Pages" do
+  let (:base_title) { "Ruby on Rails Tutorial Sample App" }
+
   describe "Home Page" do
     it "should have the content 'Sample App'" do
       visit static_pages_home_path
@@ -9,7 +11,12 @@ describe "Static Pages" do
 
     it "home should have the right title" do
       visit static_pages_home_path
-      expect(page).to have_title("Ruby on Rails Tutorial Sample App | Home")
+      expect(page).to have_title("#{base_title}")
+    end
+
+    it "should not have a custom page title" do
+      visit static_pages_home_path
+      expect(page).to_not have_title("| Home")
     end
   end
 
@@ -21,7 +28,7 @@ describe "Static Pages" do
 
     it "help should have the right title" do
       visit static_pages_help_path
-      expect(page).to have_title("Ruby on Rails Tutorial Sample App | Help")
+      expect(page).to have_title("#{base_title} | Help")
     end
   end
 
@@ -33,8 +40,20 @@ describe "Static Pages" do
 
     it "about should have the right title" do
       visit static_pages_about_path
-      expect(page).to have_title("Ruby on Rails Tutorial Sample App | About")
+      expect(page).to have_title("#{base_title} | About")
     end
   end
 
+  describe "Contact page" do
+    it "should have the content 'Contact Us'" do
+      visit static_pages_contact_path
+      expect(page).to have_content("Contact Us")
+    end
+
+    it "should have the right title" do
+      visit static_pages_contact_path
+      puts page.title
+      expect(page).to have_title("#{base_title} | Contact")
+    end
+  end
 end
