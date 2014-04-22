@@ -48,13 +48,26 @@ describe "UserPages" do
       end
 
       describe "after creating an account" do
-        let (:welcome_msg) { "Welcome to the Sample App!" }
         before { click_button submit }
+        let(:welcome_msg) { "Welcome to the Sample App!" }
         it { should have_content(welcome_msg) }
 
         describe "after a refresh" do
           before { visit current_path }
           it { should_not have_content(welcome_msg) }
+        end
+
+        describe "going to the home page" do
+          before { visit root_path }
+          let(:user) { User.find_by(email: "user@example.com") }
+
+          it { should have_link("Sign out") }
+          it { should have_title(user.name) }
+        end
+
+        describe "followed by signout" do
+          before { click_link "Sign out" }
+          it { should have_link("Sign in") }
         end
       end
     end

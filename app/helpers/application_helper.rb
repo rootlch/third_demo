@@ -7,4 +7,8 @@ module ApplicationHelper
       base_title
     end
   end
+
+  def user_name
+    signed_in? ? " | #{current_user.name}" : ""
+  end
 end
