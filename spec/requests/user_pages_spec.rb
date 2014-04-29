@@ -6,7 +6,6 @@ describe "UserPages" do
   describe "index" do
     let(:user) { FactoryGirl.create(:user) }
     before(:each) do
-      visit signin_path
       valid_signin user
       visit users_path
     end
@@ -38,7 +37,6 @@ describe "UserPages" do
       describe "as an admin user" do
         let(:admin) { FactoryGirl.create(:admin) }
         before do
-          visit signin_path
           valid_signin(admin)
           visit users_path
         end
@@ -139,7 +137,6 @@ describe "UserPages" do
   describe "edit" do
     let(:user) { FactoryGirl.create(:user) }
     before do
-      visit signin_path
       valid_signin user
       visit edit_user_path(user) 
     end
