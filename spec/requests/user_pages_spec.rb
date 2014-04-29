@@ -3,6 +3,69 @@ require 'spec_helper'
 describe "UserPages" do
   subject { page }
 
+  describe "index" do
+    let(:user) { FactoryGirl.create(:user) }
+    before(:each) do
+      visit signin_path
+      valid_signin user
+      visit users_path
+    end
+
+    it { should have_title("All users") }
+    it { should have_content("All users") }
+
+    it "should list each user" do
+      User.all.each do |user|
+        expect(page).to have_selector("li", text: user.name)
+      end
+    end
+
+    describe "pagination" do
+      before(:all) { 30.times { FactoryGirl.create(:user) } }
+      after(:all) { User.delete_all }
+
+      it { should have_selector('div.pagination') }
+      it "should list each user" do
+        User.paginate(page: 1).each do |user|
+          expect(page).to have_selector('li', text: user.name)
+        end
+      end
+    end
+
+    describe "delete links" do
+      it { should_not have_link("delete") }
+
+      describe "as an admin user" do
+        let(:admin) { FactoryGirl.create(:admin) }
+        before do
+          visit signin_path
+          valid_signin(admin)
+          visit users_path
+        end
+
+        it { should have_link("delete", href: user_path(User.first)) }
+        it "should be able to delete another user" do
+          expect do
+            click_link("delete", match: :first)
+          end.to change(User, :count).by(-1)
+        end
+        it { should_not have_link("delete", href: user_path(admin)) }
+      end
+
+      describe "as non-admin user" do
+        let(:user) { FactoryGirl.create(:user) }
+        let(:non_admin) { FactoryGirl.create(:user) }
+
+        before { valid_signin non_admin, no_capybara: true }
+
+        describe "submitting a DELETE request to the User#destroy action" do
+          before { delete user_path(user) }
+          specify { expect(response).to redirect_to(root_url) }
+        end
+      end
+    end
+  end
+
   describe "signup page" do
     before { visit signup_path }
 
@@ -70,6 +133,44 @@ describe "UserPages" do
           it { should have_link("Sign in") }
         end
       end
+    end
+  end
+
+  describe "edit" do
+    let(:user) { FactoryGirl.create(:user) }
+    before do
+      visit signin_path
+      valid_signin user
+      visit edit_user_path(user) 
+    end
+
+    describe "page" do
+      it { should have_content("Update your profile") }
+      it { should have_title("Edit user") }
+      it { should have_link("change", href: "http://gravatar.com/emails") }
+    end
+
+    describe "with invalid information" do
+      before { click_button "Save changes" }
+      it { should have_content("error") }
+    end
+
+    describe "with valid information" do
+      let(:new_name) { "New Name" }
+      let(:new_email) { "new@example.com" }
+      before do
+        fill_in "Name", with: new_name
+        fill_in "Email", with: new_email
+        fill_in "Password", with: user.password
+        fill_in "Confirm Password", with: user.password
+        click_button "Save changes"
+      end
+
+      it { should have_title(new_name) }
+      it { should have_selector("div.alert.alert-success") }
+      it { should have_link("Sign out", href: signout_path) }
+      specify { expect(user.reload.name).to eq new_name }
+      specify { expect(user.reload.email).to eq new_email }
     end
   end
 end
