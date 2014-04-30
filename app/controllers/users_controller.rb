@@ -3,6 +3,7 @@ class UsersController < ApplicationController
   before_action :signed_in_user, only: [:update, :edit, :index]
   before_action :authorized_user, only: [:update, :edit]
   before_action :admin_user, only: [:destroy]
+  before_action :admin_self, only: [:destroy]
 
   def index
     @users = User.paginate(page: params[:page])
@@ -75,5 +76,9 @@ class UsersController < ApplicationController
 
   def admin_user
     redirect_to(root_url) unless current_user.admin?
+  end
+
+  def admin_self
+    redirect_to(root_url) if current_user == target_user
   end
 end
