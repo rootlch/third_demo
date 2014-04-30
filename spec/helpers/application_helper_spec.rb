@@ -12,7 +12,7 @@ describe ApplicationHelper do
     end
 
     it 'should not include a bar for the home page' do
-      expect(full_title('')).to match(/\|/)
+      expect(full_title('')).to_not match(/\|/)
     end
   end
 end

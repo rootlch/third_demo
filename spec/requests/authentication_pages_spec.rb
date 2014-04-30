@@ -16,6 +16,9 @@ describe "Authentication" do
 
       it { should not_signed_in }
       it { should have_error_msg }
+      it { should_not have_link("Profile") }
+      it { should_not have_link("Settings") }
+      it { should_not have_link("Users") }
 
       describe "after visiting another page" do
         before { click_link "Home" }
