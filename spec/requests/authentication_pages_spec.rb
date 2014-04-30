@@ -87,6 +87,31 @@ describe "Authentication" do
         specify { expect(response).to redirect_to(root_url) }
       end
     end
+
+    describe "as signed in user" do
+      let(:user) { FactoryGirl.create(:user) }
+      before { valid_signin user, no_capybara: true}
+
+      describe "visit the signin page" do
+        before { get signin_path }
+        specify { expect(response).to redirect_to(root_url) }
+      end
+
+      describe "submitting a Post request to the Sessions#create action" do
+        before { post sessions_path(user) }
+        specify { expect(response).to redirect_to(root_url) }
+      end
+    end
   end
 
+  describe "friendly redirect" do
+    let(:user) { FactoryGirl.create(:user) }
+    before do
+      visit users_path
+      sign_in user
+      signout
+      valid_signin user
+    end
+    specify { expect(current_url).to eq user_url(user) }
+  end
 end
