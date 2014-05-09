@@ -25,6 +25,8 @@ class UsersController < ApplicationController
   end
 
   def show
+    @user = target_user
+    @microposts = @user.microposts.paginate(page: params[:page])
   end
 
   def edit
@@ -53,13 +55,6 @@ class UsersController < ApplicationController
 
   def update_successful
     @user && @user.update_attributes(user_params)
-  end
-
-  def signed_in_user
-    unless signed_in?
-      store_location
-      redirect_to signin_url, notice: "Please sign in."
-    end
   end
 
   def authorized_user

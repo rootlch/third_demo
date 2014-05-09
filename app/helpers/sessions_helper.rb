@@ -17,6 +17,13 @@ module SessionsHelper
     self.current_user = nil
   end
 
+  def signed_in_user
+    unless signed_in?
+      store_location
+      redirect_to signin_url, notice: "Please sign in."
+    end
+  end
+
   attr_writer :current_user
 
   def current_user
