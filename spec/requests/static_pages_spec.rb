@@ -31,6 +31,14 @@ describe "Static Pages" do
         end
       end
 
+      it "should not display delete links for micropost not created by this user" do
+        user.feed.each do |item|
+          if item.user != user 
+            expect(page).to_not have_selector("li##{item.id}", text: "delete")
+          end
+        end
+      end
+
       it { should have_content("#{user.microposts.count} microposts") }
       it { should_not have_selector("div.pagination") }
 
