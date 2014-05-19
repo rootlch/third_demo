@@ -32,6 +32,18 @@ describe "Static Pages" do
       end
 
       it { should have_content("#{user.microposts.count} microposts") }
+      it { should_not have_selector("div.pagination") }
+
+      describe "more than 30 microposts" do
+        before do
+          30.times do
+            FactoryGirl.create(:micropost, user: user, content: "test")
+          end
+          visit root_path
+        end
+
+        it { should have_selector("div.pagination") }
+      end
     end
   end
 
