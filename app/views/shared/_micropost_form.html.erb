@@ -1,7 +1,24 @@
+<script>
+  function update_counter(text) {
+    document.getElementById("character_count").innerHTML = text;
+  }
+
+  function countdown(value) {
+    var max_count = 140;
+    var characters_left = max_count - value.length;
+    if (characters_left === 1) {
+      update_counter("1 character left");
+      } else {
+      update_counter(characters_left.toString() + " characters left");
+    }
+  }
+</script>
+
 <%= form_for(@micropost) do |f| %>
   <%= render "shared/error_messages", object: f.object %>
   <div class="field">
-    <%= f.text_area :content, placeholder: "Compose new micropost..." %>
+    <%= f.text_area :content, placeholder: "Compose new micropost...", oninput:"countdown(this.value)" %>
+    <p id="character_count">140 characters left</p>
   </div>
   <%= f.submit "Post", class: "btn btn-large btn-primary" %>
 <% end %>
